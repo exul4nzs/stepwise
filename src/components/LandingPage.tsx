@@ -71,7 +71,7 @@ export default function LandingPage({ onStart }: LandingPageProps) {
           lineHeight: 1.6,
           fontWeight: 500
         }}>
-          We get it. Stepwise is a survival tool built by engineering students, for engineering students. No corporate fluff—just the core concepts you actually need to pass.
+          Stop stressing. Stepwise is a <span style={{ color: C.primary }}>free, focused tool</span> built for you by engineering students. No junk—just the exact concepts you need to pass the exam.
         </p>
 
         {/* Features Grid */}
@@ -83,19 +83,19 @@ export default function LandingPage({ onStart }: LandingPageProps) {
           textAlign: "left"
         }}>
           <FeatureCard 
-            icon="🧠" 
-            title="Actually Helpful" 
-            desc="Gemini-powered lessons that focus on retention, not just reading." 
+            icon="🆓" 
+            title="100% Free" 
+            desc="No credits, no energy limits. Just open it up and start reviewing whenever you need to." 
           />
           <FeatureCard 
-            icon="🔍" 
-            title="Scan the Syllabus" 
-            desc="Throw your PDFs at us and we'll tell you what to actually study." 
+            icon="🎯" 
+            title="Hyper-Focused" 
+            desc="Upload your specific syllabus and get a study guide that actually matches your exam." 
           />
           <FeatureCard 
-            icon="📐" 
-            title="Clean Math" 
-            desc="No messy text—just clear, readable engineering formulas." 
+            icon="✨" 
+            title="Built for You" 
+            desc="Clean math, simple navigation, and zero distractions. Designed for how you study." 
           />
         </div>
 
