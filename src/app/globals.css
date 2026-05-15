@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+/* ─── DARK EMERALD DESIGN SYSTEM ──────────────────────────── */
+:root {
+  --bg:           #060d08;
+  --bg-card:      rgba(10, 22, 14, 0.82);
+  --bg-high:      #0c1a10;
+  --bg-higher:    #122516;
+  --bg-highest:   #1a3322;
+
+  --border:       rgba(40, 75, 50, 0.45);
+  --border-bright:rgba(52, 211, 102, 0.28);
+
+  --text:         #e2f0e6;
+  --text-muted:   #a8c4af;
+  --text-dim:     #5e8268;
+
+  --primary:      #34d366;
+  --primary-dim:  #22a74f;
+  --primary-deep: #08301a;
+  --primary-glow: rgba(52, 211, 102, 0.35);
+
+  --gold:         #fbbf24;
+  --gold-glow:    rgba(251, 191, 36, 0.30);
+  --error:        #f87171;
+
+  --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Montserrat', 'Inter', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  font-family: var(--font-sans);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg-highest); border-radius: 8px; }
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(52, 211, 102, 0.2); }
+  50% { box-shadow: 0 0 24px rgba(52, 211, 102, 0.4); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Grid background overlay for main content */
+.grid-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(52, 211, 102, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52, 211, 102, 0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Glass morphism utility */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+/* Neon glow utilities */
+.neon-green { box-shadow: 0 0 18px var(--primary-glow); }
+.neon-gold  { box-shadow: 0 0 18px var(--gold-glow); }
