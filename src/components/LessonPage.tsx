@@ -226,11 +226,11 @@ export default function LessonPage({ user, isAdmin }: LessonPageProps) {
                       <div style={{ 
                         fontSize: 17, 
                         fontWeight: 800, 
-                        color: "#fff", 
+                        color: item.title ? "#fff" : C.error, 
                         marginBottom: 6,
                         fontFamily: "var(--font-display)" 
                       }}>
-                        {item.title}
+                        {item.title || "[CORRUPTED MODULE - PLEASE DELETE]"}
                       </div>
                       <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                         <span style={{ fontSize: 12, color: C.textMuted, display: "flex", alignItems: "center", gap: 6 }}>
@@ -250,18 +250,28 @@ export default function LessonPage({ user, isAdmin }: LessonPageProps) {
                           <button
                             onClick={(e) => handleDelete(item.id, e)}
                             style={{
-                              background: "rgba(239,68,68,0.1)",
+                              position: "absolute",
+                              top: -12,
+                              right: -12,
+                              background: C.error,
                               border: "none",
-                              color: "#ef4444",
-                              fontSize: 10,
-                              fontWeight: 800,
-                              padding: "2px 8px",
-                              borderRadius: 4,
+                              color: "#fff",
+                              fontSize: 14,
+                              width: 32,
+                              height: 32,
+                              borderRadius: "50%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
                               cursor: "pointer",
-                              marginLeft: "auto"
+                              boxShadow: "0 4px 12px rgba(248,113,113,0.3)",
+                              transition: "transform 0.2s"
                             }}
+                            onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
+                            onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                            title="Delete Module"
                           >
-                            ELIMINATE
+                            🗑️
                           </button>
                         )}
                       </div>
