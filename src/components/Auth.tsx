@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { C, glass, neonGreen } from "@/lib/tokens";
 
 interface AuthProps {
-  onSession: (user: any) => void;
+  onSession: (session: any) => void;
 }
 
 export default function Auth({ onSession }: AuthProps) {
@@ -50,7 +50,7 @@ export default function Auth({ onSession }: AuthProps) {
           <div style={{ padding: 16, background: "rgba(52,211,102,0.05)", borderRadius: 12, border: `1px solid ${C.primary}22`, textAlign: "left", marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: C.primary, fontWeight: 800, marginBottom: 4 }}>DEVELOPER TIP:</div>
             <div style={{ fontSize: 11, color: C.textDim }}>
-              To bypass this during development, go to <strong>Supabase > Auth > Providers > Email</strong> and disable "Confirm email".
+              To bypass this during development, go to <strong>Supabase &gt; Auth &gt; Providers &gt; Email</strong> and disable "Confirm email".
             </div>
           </div>
           <button 
@@ -125,7 +125,7 @@ export default function Auth({ onSession }: AuthProps) {
           </p>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <form onSubmit={handleAuth} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
             <label style={{ fontSize: 11, color: C.primary, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 8 }}>Email Address</label>
             <input 
@@ -133,6 +133,7 @@ export default function Auth({ onSession }: AuthProps) {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="engineer@stepwise.edu"
+              required
               style={{
                 width: "100%",
                 padding: "14px 16px",
@@ -154,6 +155,7 @@ export default function Auth({ onSession }: AuthProps) {
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
+              required
               style={{
                 width: "100%",
                 padding: "14px 16px",
@@ -169,8 +171,7 @@ export default function Auth({ onSession }: AuthProps) {
           </div>
 
           <button 
-            type="button"
-            onClick={handleAuth}
+            type="submit"
             disabled={loading}
             style={{
               width: "100%",
@@ -190,10 +191,11 @@ export default function Auth({ onSession }: AuthProps) {
           >
             {loading ? "⬡ AUTHORIZING..." : mode === "login" ? "ACCESS PLATFORM" : "INITIALIZE PROFILE"}
           </button>
-        </div>
+        </form>
 
         <div style={{ textAlign: "center", marginTop: 24, display: "flex", flexDirection: "column", gap: 12 }}>
           <button 
+            type="button"
             onClick={() => setMode(mode === "login" ? "signup" : "login")}
             style={{ 
               background: "transparent", 
@@ -209,6 +211,7 @@ export default function Auth({ onSession }: AuthProps) {
 
           {/* Dev Bypass */}
           <button 
+            type="button"
             onClick={() => onSession({ user: { email: "dev@stepwise.edu" } })}
             style={{ 
               background: "transparent", 
