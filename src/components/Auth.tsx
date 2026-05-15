@@ -13,9 +13,10 @@ export default function Auth({ onSession }: AuthProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"login" | "signup">("login");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setLoading(true);
     
     const { data, error } = mode === "login" 
@@ -29,12 +30,39 @@ export default function Auth({ onSession }: AuthProps) {
     } else if (data.session) {
       onSession(data.session);
     } else if (data.user && mode === "signup") {
-      alert("✅ Initialized! Please check your email to confirm your account before logging in.");
+      setShowSuccess(true);
     } else {
       alert("⚠️ Session not established. Try refreshing the page.");
     }
     setLoading(false);
   };
+
+  if (showSuccess) {
+    return (
+      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+        <div style={{ ...glass, maxWidth: 400, padding: 40, borderRadius: 24, textAlign: "center", border: `1px solid ${C.primary}33` }}>
+          <div style={{ fontSize: 40, marginBottom: 20 }}>✉️</div>
+          <h2 style={{ color: "#fff", fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 22, marginBottom: 12 }}>MISSION PENDING</h2>
+          <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
+            Verification email sent to <strong style={{ color: C.primary }}>{email}</strong>. 
+            Please check your inbox to activate your profile.
+          </p>
+          <div style={{ padding: 16, background: "rgba(52,211,102,0.05)", borderRadius: 12, border: `1px solid ${C.primary}22`, textAlign: "left", marginBottom: 24 }}>
+            <div style={{ fontSize: 11, color: C.primary, fontWeight: 800, marginBottom: 4 }}>DEVELOPER TIP:</div>
+            <div style={{ fontSize: 11, color: C.textDim }}>
+              To bypass this during development, go to <strong>Supabase > Auth > Providers > Email</strong> and disable "Confirm email".
+            </div>
+          </div>
+          <button 
+            onClick={() => setShowSuccess(false)}
+            style={{ background: "transparent", border: `1px solid ${C.border}`, color: C.textDim, padding: "10px 20px", borderRadius: 10, cursor: "pointer", fontSize: 13 }}
+          >
+            Return to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ 
