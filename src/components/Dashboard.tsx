@@ -180,169 +180,64 @@ export default function Dashboard({ user, setPage }: DashboardProps) {
         </div>
       </div>
 
-      {/* Grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 300px",
-          gap: 20,
-          marginBottom: 20,
-        }}
-      >
-        {/* Progress */}
-        <div style={{ ...glass, padding: "24px 28px", borderRadius: 16 }}>
-          <div
-            style={{
-              fontSize: 11,
-              color: C.primary,
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              marginBottom: 20,
-            }}
-          >
-            Core Progression
-          </div>
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: 18 }}
-          >
-            {PROGRESS_DATA.map((d) => (
-              <div
-                key={d.subject}
-                style={{ display: "flex", alignItems: "center", gap: 16 }}
-              >
-                <CircleProgress pct={d.pct} color={d.color} />
-                <div>
-                  <div
-                    style={{ fontWeight: 700, fontSize: 14, color: C.text }}
-                  >
-                    {d.subject}
-                  </div>
-                  <div style={{ fontSize: 12, color: C.textMuted }}>
-                    {d.topic}
-                  </div>
-                  {weak.includes(d.subject) && (
-                    <div
-                      style={{
-                        fontSize: 11,
-                        color: C.error,
-                        marginTop: 2,
-                      }}
-                    >
-                      ● Weak area flagged
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Core Progression (Full Width) */}
+      <div style={{ ...glass, padding: "28px 32px", borderRadius: 16, marginBottom: 24 }}>
+        <div
+          style={{
+            fontSize: 11,
+            color: C.primary,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.12em",
+            marginBottom: 24,
+          }}
+        >
+          Core Progression
         </div>
-
-        {/* Leaderboard */}
-        <div style={{ ...glass, padding: "24px", borderRadius: 16 }}>
-          <div
-            style={{
-              fontSize: 11,
-              color: C.gold,
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              marginBottom: 20,
-            }}
-          >
-            Arena Standings
-          </div>
-          {[
-            { rank: "01", name: "Pilot_X", xp: "12.4k", gold: true },
-            { rank: "02", name: "Arch_9", xp: "11.1k", gold: false },
-            { rank: "08", name: "YOU", xp: "8.2k", you: true },
-          ].map((e) => (
+        <div
+          style={{ 
+            display: "grid", 
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", 
+            gap: 24 
+          }}
+        >
+          {PROGRESS_DATA.map((d) => (
             <div
-              key={e.rank}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: "10px 12px",
-                borderRadius: 10,
-                marginBottom: 8,
-                background: e.you
-                  ? "rgba(52,211,102,0.07)"
-                  : e.gold
-                  ? "rgba(251,191,36,0.07)"
-                  : "transparent",
-                borderLeft: e.you
-                  ? `2px solid ${C.primary}`
-                  : e.gold
-                  ? `2px solid ${C.gold}`
-                  : "2px solid transparent",
+              key={d.subject}
+              style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 16,
+                padding: "16px",
+                background: "rgba(255,255,255,0.02)",
+                borderRadius: 12,
+                border: `1px solid ${C.border}`
               }}
             >
-              <span
-                style={{
-                  fontWeight: 800,
-                  fontSize: 13,
-                  color: e.you ? C.primary : e.gold ? C.gold : C.textDim,
-                  width: 24,
-                }}
-              >
-                {e.rank}
-              </span>
-              <div
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: "50%",
-                  background: C.bgHighest,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 12,
-                  color: C.textMuted,
-                }}
-              >
-                {e.name[0]}
+              <CircleProgress pct={d.pct} color={d.color} />
+              <div>
+                <div
+                  style={{ fontWeight: 700, fontSize: 14, color: C.text }}
+                >
+                  {d.subject}
+                </div>
+                <div style={{ fontSize: 12, color: C.textMuted }}>
+                  {d.topic}
+                </div>
+                {weak.includes(d.subject) && (
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: C.error,
+                      marginTop: 2,
+                    }}
+                  >
+                    ● Weak area flagged
+                  </div>
+                )}
               </div>
-              <span
-                style={{
-                  flex: 1,
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: e.you ? C.primary : C.text,
-                }}
-              >
-                {e.name}
-              </span>
-              <span
-                style={{
-                  fontSize: 12,
-                  fontWeight: 800,
-                  color: e.you ? C.primary : C.textMuted,
-                }}
-              >
-                {e.xp}
-              </span>
             </div>
           ))}
-          <button
-            style={{
-              width: "100%",
-              marginTop: 8,
-              padding: "8px",
-              background: "transparent",
-              border: `1px solid ${C.border}`,
-              borderRadius: 8,
-              color: C.textDim,
-              fontSize: 11,
-              cursor: "pointer",
-              fontFamily: "var(--font-sans)",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-            }}
-          >
-            View Full Board
-          </button>
         </div>
       </div>
 

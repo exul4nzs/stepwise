@@ -15,9 +15,10 @@ interface Quiz {
 
 interface ArenaPageProps {
   user: UserProfile;
+  updateUser: (updates: Partial<UserProfile>) => void;
 }
 
-export default function ArenaPage({ user }: ArenaPageProps) {
+export default function ArenaPage({ user, updateUser }: ArenaPageProps) {
   const [subject, setSubject] = useState<string | null>(null);
   const [difficulty, setDifficulty] = useState("Intermediate");
   const [quiz, setQuiz] = useState<Quiz | null>(null);

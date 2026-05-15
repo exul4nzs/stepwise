@@ -23,6 +23,7 @@ export interface UserProfile {
   name: string;
   isFamiliar: boolean | null;
   weakSubjects: string[];
+  streak: number;
 }
 
 // ─── PROGRESS DATA ────────────────────────────────────────────────────────

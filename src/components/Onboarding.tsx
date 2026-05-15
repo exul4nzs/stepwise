@@ -20,7 +20,12 @@ export default function Onboarding({ onDone }: OnboardingProps) {
     );
 
   const finish = () => {
-    onDone({ name: name || "Engineer", isFamiliar, weakSubjects: weak });
+    onDone({ 
+      name: name || "Engineer", 
+      isFamiliar, 
+      weakSubjects: weak,
+      streak: 1,
+    });
   };
 
   return (

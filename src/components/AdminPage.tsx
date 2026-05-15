@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { C, glass, neonGreen } from "@/lib/tokens";
-import { SUBJECTS } from "@/lib/constants";
+import { SUBJECTS, type UserProfile } from "@/lib/constants";
 import { callAI } from "@/lib/ai";
 import { supabase } from "@/lib/supabase";
 import * as pdfjs from "pdfjs-dist";
@@ -10,38 +10,15 @@ import * as pdfjs from "pdfjs-dist";
 // Set worker for pdfjs
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-/* ─── Markdown renderer ────────────────────────────────────────────────── */
-function renderMarkdown(text: string): string {
-  return text
-    .replace(
-      /^### (.+)$/gm,
-      '<h3 style="color:#34d366;font-size:15px;margin:14px 0 6px;font-family:Montserrat,sans-serif;">$1</h3>'
-    )
-    .replace(
-      /^## (.+)$/gm,
-      '<h2 style="color:#22a74f;font-size:17px;margin:18px 0 8px;font-family:Montserrat,sans-serif;">$1</h2>'
-    )
-    .replace(
-      /^# (.+)$/gm,
-      '<h1 style="color:#34d366;font-size:20px;margin:0 0 12px;font-family:Montserrat,sans-serif;font-weight:900;">$1</h1>'
-    )
-    .replace(
-      /\*\*(.+?)\*\*/g,
-      '<strong style="color:#e2f0e6;">$1</strong>'
-    )
-    .replace(
-      /`(.+?)`/g,
-      '<code style="background:rgba(52,211,102,0.1);color:#34d366;padding:2px 5px;border-radius:4px;font-size:12px;">$1</code>'
-    )
-    .replace(
-      /^- (.+)$/gm,
-      '<li style="color:#a8c4af;margin:3px 0;">$1</li>'
-    )
-    .replace(/\n\n/g, "<br/><br/>");
-}
+import { renderMarkdown } from "@/lib/markdown";
 
 /* ─── Admin Page ───────────────────────────────────────────────────────── */
-export default function AdminPage() {
+interface AdminPageProps {
+  user: UserProfile;
+  updateUser: (updates: Partial<UserProfile>) => void;
+}
+
+export default function AdminPage({ user, updateUser }: AdminPageProps) {
   const [subject, setSubject] = useState<string>(SUBJECTS[0]);
   const [topic, setTopic] = useState("");
   const [type, setType] = useState<"lesson" | "quiz">("lesson");
@@ -49,6 +26,23 @@ export default function AdminPage() {
   const [result, setResult] = useState("");
   const [extracting, setExtracting] = useState(false);
   const [extractedText, setExtractedText] = useState("");
+  const [suggestedTopics, setSuggestedTopics] = useState<string[]>([]);
+  const [scanning, setScanning] = useState(false);
+
+  const scanPDF = async () => {
+    if (!extractedText) return;
+    setScanning(true);
+    try {
+      const sys = "You are a curriculum assistant. Scan the provided text from an engineering PDF and extract a list of 5-8 major topics/chapters as a simple comma-separated list. Be concise.";
+      const prompt = `TEXT FROM PDF:\n${extractedText.substring(0, 5000)}\n\nIdentify the main topics for a study guide.`;
+      const res = await callAI(sys, prompt);
+      const topics = res.split(",").map(t => t.trim());
+      setSuggestedTopics(topics.filter(t => t.length > 2));
+    } catch (err) {
+      console.error("Scan error:", err);
+    }
+    setScanning(false);
+  };
   const [uploads, setUploads] = useState<any[]>([]);
 
   const onFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,6 +88,7 @@ export default function AdminPage() {
         alert("Please enter a topic or upload a PDF first.");
         return;
     }
+
     setGenerating(true);
     setResult("");
 
@@ -155,10 +150,16 @@ Ignore advanced topics like PDEs, Series Solutions, or complex Boundary Value Pr
         ]);
         if (error) throw error;
       }
-      alert("Saved successfully to Supabase!");
+      alert("Mission Accomplished! Content saved to database.");
     } catch (err: any) {
-      console.error("Error saving to DB:", err);
-      alert("Error saving: " + err.message);
+      console.error("Supabase Save Error Details:", {
+        message: err.message,
+        details: err.details,
+        hint: err.hint,
+        code: err.code,
+        fullError: err
+      });
+      alert(`Database Error: ${err.message || "Check console for details"}`);
     }
   };
 
@@ -445,6 +446,57 @@ Ignore advanced topics like PDEs, Series Solutions, or complex Boundary Value Pr
               </div>
             ))}
           </div>
+
+          {/* Topic Suggestions */}
+          {extractedText && (
+            <div style={{ ...glass, padding: "22px", borderRadius: 16, marginTop: 16 }}>
+              <button
+                onClick={scanPDF}
+                disabled={scanning}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  background: scanning ? "transparent" : "rgba(52,211,102,0.1)",
+                  border: `1px solid ${C.primary}`,
+                  color: C.primary,
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  marginBottom: 16
+                }}
+              >
+                {scanning ? "🔍 SCANNING PDF..." : "🔍 SCAN PDF FOR TOPICS"}
+              </button>
+
+              {suggestedTopics.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ fontSize: 10, color: C.textDim, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+                    Suggested from Document:
+                  </div>
+                  {suggestedTopics.map((t, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setTopic(t)}
+                      style={{
+                        padding: "8px 12px",
+                        background: "rgba(255,255,255,0.03)",
+                        border: `1px solid ${topic === t ? C.primary : C.border}`,
+                        borderRadius: 6,
+                        color: topic === t ? C.primary : C.textMuted,
+                        fontSize: 12,
+                        textAlign: "left",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right: Output */}

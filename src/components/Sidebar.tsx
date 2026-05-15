@@ -2,14 +2,23 @@
 
 import { C, glass } from "@/lib/tokens";
 import { PAGES, type PageId, type UserProfile } from "@/lib/constants";
+import { supabase } from "@/lib/supabase";
 
 interface SidebarProps {
   page: PageId;
   setPage: (p: PageId) => void;
   user: UserProfile;
+  isAdmin: boolean;
 }
 
-export default function Sidebar({ page, setPage, user }: SidebarProps) {
+export default function Sidebar({ page, setPage, user, isAdmin }: SidebarProps) {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload(); // Refresh to reset state
+  };
+
+  const filteredPages = PAGES.filter(p => p.id !== "admin" || isAdmin);
+
   return (
     <aside
       style={{
@@ -66,7 +75,7 @@ export default function Sidebar({ page, setPage, user }: SidebarProps) {
                 textTransform: "uppercase",
               }}
             >
-              Engineering Review
+              {isAdmin ? "Admin Console" : "Engineering Review"}
             </div>
           </div>
         </div>
@@ -90,19 +99,31 @@ export default function Sidebar({ page, setPage, user }: SidebarProps) {
             marginBottom: 4,
           }}
         >
-          Commander
+          {isAdmin ? "Administrator" : "Commander"}
         </div>
         <div style={{ fontWeight: 700, fontSize: 13, color: C.text }}>
           {user?.name || "Engineer"}
         </div>
-        <div style={{ fontSize: 11, color: C.primary, marginTop: 2 }}>
-          ● Protocol Active
-        </div>
+        <button 
+          onClick={handleLogout}
+          style={{ 
+            fontSize: 10, 
+            color: C.primary, 
+            marginTop: 6, 
+            background: "none", 
+            border: "none", 
+            cursor: "pointer", 
+            padding: 0,
+            textDecoration: "underline"
+          }}
+        >
+          Terminate Session
+        </button>
       </div>
 
       {/* Nav links */}
       <nav style={{ flex: 1, padding: "0 12px" }}>
-        {PAGES.map((p) => {
+        {filteredPages.map((p) => {
           const active = page === p.id;
           return (
             <button
@@ -140,6 +161,20 @@ export default function Sidebar({ page, setPage, user }: SidebarProps) {
         })}
       </nav>
 
+      {/* Real Streak Only */}
+      <div
+        style={{
+          padding: "16px 20px",
+          borderTop: `1px solid ${C.border}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span style={{ fontSize: 13, color: C.primary, fontWeight: 700 }}>
+          🔥 {user?.streak ?? 0} DAY STREAK
+        </span>
+      </div>
     </aside>
   );
 }

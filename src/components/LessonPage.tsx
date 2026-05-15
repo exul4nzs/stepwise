@@ -4,313 +4,281 @@ import { useState, useEffect } from "react";
 import { C, glass } from "@/lib/tokens";
 import {
   SUBJECTS,
-  LESSON_TOPICS,
   DIFF_COLOR,
   type UserProfile,
-  type Subject,
 } from "@/lib/constants";
-import { callAI } from "@/lib/ai";
 import { supabase } from "@/lib/supabase";
-
-/* ─── Markdown renderer ────────────────────────────────────────────────── */
-function renderMarkdown(text: string): string {
-  return text
-    .replace(
-      /^### (.+)$/gm,
-      '<h3 style="color:#34d366;font-size:16px;margin:16px 0 8px;font-family:Montserrat,sans-serif;">$1</h3>'
-    )
-    .replace(
-      /^## (.+)$/gm,
-      '<h2 style="color:#22a74f;font-size:18px;margin:20px 0 10px;font-family:Montserrat,sans-serif;">$1</h2>'
-    )
-    .replace(
-      /^# (.+)$/gm,
-      '<h1 style="color:#34d366;font-size:22px;margin:0 0 14px;font-family:Montserrat,sans-serif;font-weight:900;">$1</h1>'
-    )
-    .replace(
-      /\*\*(.+?)\*\*/g,
-      '<strong style="color:#e2f0e6;font-weight:700;">$1</strong>'
-    )
-    .replace(
-      /`(.+?)`/g,
-      '<code style="background:rgba(52,211,102,0.1);color:#34d366;padding:2px 6px;border-radius:4px;font-size:13px;">$1</code>'
-    )
-    .replace(
-      /^- (.+)$/gm,
-      '<li style="color:#a8c4af;margin:4px 0;padding-left:4px;">$1</li>'
-    )
-    .replace(/\n\n/g, "<br/><br/>");
-}
+import { renderMarkdown } from "@/lib/markdown";
 
 /* ─── Lesson Page ──────────────────────────────────────────────────────── */
-interface LessonPageProps {
-  user: UserProfile;
+interface Lesson {
+  id: string;
+  title: string;
+  subject: string;
+  markdown_content: string;
+  difficulty: string;
 }
 
-export default function LessonPage({ user }: LessonPageProps) {
-  const [activeSubject, setActiveSubject] = useState<Subject>(SUBJECTS[0]);
-  const [activeTopic, setActiveTopic] = useState<{
-    title: string;
-    difficulty: string;
-    duration: string;
-    done: boolean;
-  } | null>(null);
-  const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [dbTopics, setDbTopics] = useState<any[]>([]);
+interface LessonPageProps {
+  user: UserProfile;
+  isAdmin: boolean;
+}
 
-  const fetchDbTopics = async () => {
+export default function LessonPage({ user, isAdmin }: LessonPageProps) {
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchLessons();
+  }, []);
+
+  async function fetchLessons() {
+    setLoading(true);
     const { data, error } = await supabase
       .from("lessons")
       .select("*")
-      .eq("subject", activeSubject);
-    
-    if (data && !error) {
-      setDbTopics(data.map(d => ({
-        title: d.title,
-        difficulty: d.difficulty,
-        duration: "AI Generated",
-        done: false,
-        id: d.id,
-        isDb: true,
-        content: d.markdown_content
-      })));
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setLessons(data);
     }
-  };
-
-  const allTopics = [...(LESSON_TOPICS[activeSubject] || []), ...dbTopics];
-
-  useEffect(() => {
-    fetchDbTopics();
-  }, [activeSubject]);
-
-  const loadLesson = async (topic: any) => {
-    setActiveTopic(topic);
-    setContent("");
-    
-    if (topic.isDb) {
-      setContent(topic.content);
-      return;
-    }
-
-    setLoading(true);
-    const sys = `You are an expert engineering professor. Generate a concise, engaging lesson on the given topic formatted in clean markdown. Include:
-1. A brief conceptual overview (2-3 sentences)
-2. Key formula(s) in simple notation  
-3. A worked example
-4. 2 key takeaways
-Keep it focused for engineering students. Use plain text, no HTML.`;
-    const text = await callAI(
-      sys,
-      `Generate a lesson on: ${topic.title} (Subject: ${activeSubject}, Difficulty: ${topic.difficulty})`,
-      () => {}
-    );
-    setContent(text);
     setLoading(false);
-  };
+  }
+
+  async function handleDelete(id: string, e: React.MouseEvent) {
+    e.stopPropagation(); // Don't open the lesson
+    if (!confirm("Are you sure you want to delete this module? This action is irreversible.")) return;
+
+    const { error } = await supabase.from("lessons").delete().eq("id", id);
+    if (error) alert("Delete failed: " + error.message);
+    else fetchLessons();
+  }
+
+  if (activeLesson) {
+    return (
+      <div style={{ padding: "28px 36px", maxWidth: 1000, margin: "0 auto" }}>
+        <button
+          onClick={() => setActiveLesson(null)}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: C.primary,
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: "pointer",
+            marginBottom: 20,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          ← BACK TO LIBRARY
+        </button>
+
+        <div className="animate-fade-in" style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: 32 }}>
+          <div>
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ 
+                display: "inline-block", 
+                padding: "4px 12px", 
+                borderRadius: 6, 
+                background: "rgba(52,211,102,0.1)",
+                color: C.primary,
+                fontSize: 11,
+                fontWeight: 800,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                marginBottom: 12
+              }}>
+                {activeLesson.subject} · {activeLesson.difficulty}
+              </div>
+              <h1 style={{ 
+                fontFamily: "var(--font-display)", 
+                fontSize: 32, 
+                fontWeight: 900, 
+                color: "#fff",
+                lineHeight: 1.1
+              }}>
+                {activeLesson.title}
+              </h1>
+            </div>
+
+            <div style={{ 
+              ...glass, 
+              padding: "40px", 
+              borderRadius: 24,
+              border: `1px solid ${C.border}`,
+              background: "rgba(6,13,8,0.4)"
+            }}>
+              <div 
+                className="prose"
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(activeLesson.markdown_content) }} 
+              />
+            </div>
+          </div>
+
+          {/* TOC Sidebar */}
+          <div style={{ position: "sticky", top: 100, height: "fit-content" }}>
+            <div style={{ fontSize: 11, color: C.primary, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>
+              Table of Contents
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {activeLesson.markdown_content.split("\n")
+                .filter(line => line.startsWith("## "))
+                .map((line, idx) => {
+                  const title = line.replace("## ", "").trim();
+                  return (
+                    <div key={idx} style={{ 
+                      fontSize: 13, 
+                      color: C.textMuted, 
+                      paddingLeft: 12, 
+                      borderLeft: `1px solid ${C.border}`,
+                      transition: "all 0.2s"
+                    }}>
+                      {title}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
-      {/* Topic list */}
-      <div
-        style={{
-          width: 280,
-          borderRight: `1px solid ${C.border}`,
-          overflowY: "auto",
-          padding: "20px 0",
-          flexShrink: 0,
-        }}
-      >
-        {SUBJECTS.map((s) => (
-          <div key={s}>
-            <button
-              onClick={() => setActiveSubject(s)}
+    <div style={{ padding: "28px 36px", maxWidth: 1200, margin: "0 auto" }}>
+      {/* Subject Sections */}
+      {SUBJECTS.map((s) => {
+        const items = lessons.filter((l) => l.subject === s);
+        
+        return (
+          <div key={s} style={{ marginBottom: 48 }}>
+            <div
               style={{
-                width: "100%",
-                padding: "10px 20px",
-                textAlign: "left",
-                border: "none",
-                background:
-                  activeSubject === s
-                    ? "rgba(52,211,102,0.08)"
-                    : "transparent",
-                color: activeSubject === s ? C.primary : C.textMuted,
-                fontWeight: 700,
-                fontSize: 12,
-                cursor: "pointer",
-                fontFamily: "var(--font-sans)",
+                fontSize: 14,
+                color: C.primary,
+                fontWeight: 900,
                 textTransform: "uppercase",
-                letterSpacing: "0.08em",
+                letterSpacing: "0.15em",
+                marginBottom: 24,
+                display: "flex",
+                alignItems: "center",
+                gap: 16
               }}
             >
               {s}
-            </button>
-            {activeSubject === s &&
-              allTopics.map((t) => (
-                <button
-                  key={t.title}
-                  onClick={() => loadLesson(t)}
-                  style={{
-                    width: "100%",
-                    padding: "10px 20px 10px 28px",
-                    textAlign: "left",
-                    border: "none",
-                    background:
-                      activeTopic?.title === t.title
-                        ? "rgba(52,211,102,0.06)"
-                        : "transparent",
-                    color:
-                      activeTopic?.title === t.title ? C.primary : C.text,
-                    fontSize: 13,
-                    cursor: "pointer",
-                    fontFamily: "var(--font-sans)",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    borderLeft:
-                      activeTopic?.title === t.title
-                        ? `2px solid ${C.primary}`
-                        : "2px solid transparent",
-                  }}
-                >
-                  <span style={{ fontSize: 14 }}>
-                    {t.done ? "✓" : "○"}
-                  </span>
-                  <span style={{ flex: 1 }}>{t.title}</span>
-                  <span
+              <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, ${C.primary}33, transparent)` }} />
+            </div>
+
+            {items.length === 0 ? (
+              <div style={{ 
+                padding: "48px", 
+                background: "rgba(255,255,255,0.01)",
+                border: `1px dashed ${C.border}`, 
+                borderRadius: 20, 
+                textAlign: "center",
+                color: C.textDim,
+                fontSize: 14
+              }}>
+                <div style={{ fontSize: 24, marginBottom: 12, opacity: 0.5 }}>⬡</div>
+                No modules generated yet. 
+                <br/>
+                <span style={{ fontSize: 12, color: C.textMuted }}>Use the Admin Panel to create your first lesson.</span>
+              </div>
+            ) : (
+              <div style={{ 
+                display: "grid", 
+                gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", 
+                gap: 20 
+              }}>
+                {items.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveLesson(item)}
                     style={{
-                      fontSize: 10,
-                      color: DIFF_COLOR[t.difficulty],
-                      fontWeight: 700,
+                      ...glass,
+                      padding: "24px 28px",
+                      borderRadius: 20,
+                      border: `1px solid ${C.border}`,
+                      textAlign: "left",
+                      cursor: "pointer",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      position: "relative",
+                      overflow: "hidden"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = C.primary;
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                      e.currentTarget.style.boxShadow = `0 15px 40px ${C.primary}15`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = C.border;
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "none";
                     }}
                   >
-                    {t.difficulty[0]}
-                  </span>
-                </button>
-              ))}
-          </div>
-        ))}
-      </div>
-
-      {/* Content area */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "28px 36px" }}>
-        {!activeTopic ? (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-              color: C.textDim,
-              textAlign: "center",
-            }}
-          >
-            <div style={{ fontSize: 48, marginBottom: 16 }}>◈</div>
-            <div
-              style={{
-                fontSize: 18,
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
-              }}
-            >
-              Select a topic to begin
-            </div>
-            <div style={{ fontSize: 14, marginTop: 8 }}>
-              AI will generate a tailored lesson for you
-            </div>
-          </div>
-        ) : (
-          <div className="animate-fade-in">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                marginBottom: 24,
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: DIFF_COLOR[activeTopic.difficulty],
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    marginBottom: 6,
-                    background: `${DIFF_COLOR[activeTopic.difficulty]}18`,
-                    display: "inline-block",
-                    padding: "3px 10px",
-                    borderRadius: 6,
-                  }}
-                >
-                  {activeTopic.difficulty} · {activeTopic.duration}
-                </div>
-                <div
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontWeight: 900,
-                    fontSize: 28,
-                    color: C.text,
-                  }}
-                >
-                  {activeTopic.title}
-                </div>
-                <div
-                  style={{ fontSize: 14, color: C.textMuted, marginTop: 4 }}
-                >
-                  {activeSubject}
-                </div>
-              </div>
-            </div>
-
-            {loading && (
-              <div
-                style={{
-                  ...glass,
-                  padding: "32px",
-                  borderRadius: 16,
-                  textAlign: "center",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 14,
-                    color: C.primary,
-                    animation: "pulse 1.5s infinite",
-                  }}
-                >
-                  ⬡ Generating lesson with AI...
-                </div>
-                <div
-                  style={{ fontSize: 12, color: C.textDim, marginTop: 8 }}
-                >
-                  Analyzing curriculum and crafting your personalized content
-                </div>
-              </div>
-            )}
-
-            {content && !loading && (
-              <div
-                style={{
-                  ...glass,
-                  padding: "32px",
-                  borderRadius: 16,
-                  lineHeight: 1.7,
-                }}
-              >
-                <div
-                  style={{ fontSize: 14, color: C.text, lineHeight: 1.8 }}
-                  dangerouslySetInnerHTML={{
-                    __html: renderMarkdown(content),
-                  }}
-                />
+                    <div style={{ position: "relative", zIndex: 1, flex: 1 }}>
+                      <div style={{ 
+                        fontSize: 17, 
+                        fontWeight: 800, 
+                        color: "#fff", 
+                        marginBottom: 6,
+                        fontFamily: "var(--font-display)" 
+                      }}>
+                        {item.title}
+                      </div>
+                      <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                        <span style={{ fontSize: 12, color: C.textMuted, display: "flex", alignItems: "center", gap: 6 }}>
+                          ⏱ 15 min
+                        </span>
+                        <span style={{ 
+                          fontSize: 11, 
+                          color: DIFF_COLOR[item.difficulty] || C.primary,
+                          fontWeight: 800,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em"
+                        }}>
+                          {item.difficulty}
+                        </span>
+                        
+                        {isAdmin && (
+                          <button
+                            onClick={(e) => handleDelete(item.id, e)}
+                            style={{
+                              background: "rgba(239,68,68,0.1)",
+                              border: "none",
+                              color: "#ef4444",
+                              fontSize: 10,
+                              fontWeight: 800,
+                              padding: "2px 8px",
+                              borderRadius: 4,
+                              cursor: "pointer",
+                              marginLeft: "auto"
+                            }}
+                          >
+                            ELIMINATE
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ 
+                      fontSize: 24, 
+                      color: C.primary, 
+                      opacity: 0.3,
+                      transition: "opacity 0.2s"
+                    }} className="arrow">→</div>
+                  </button>
+                ))}
               </div>
             )}
           </div>
-        )}
-      </div>
+        );
+      })}
     </div>
   );
 }
