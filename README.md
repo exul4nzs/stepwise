@@ -1,57 +1,34 @@
 # Stepwise — Adaptive Engineering Review Platform
 
-Stepwise is a modern, AI-powered learning platform designed specifically for engineering students. It focuses on core subjects like **Differential Equations**, **Engineering Data Analysis**, and **Circuits**, providing an adaptive learning experience that grows with the student.
+> Transforming the way engineering students master complex concepts through AI-driven adaptation and immersive review experiences.
 
-![Project Preview](https://via.placeholder.com/1200x600?text=Stepwise+Adaptive+Engineering+Platform)
+Stepwise is an elite, intelligent learning ecosystem crafted for the Computer Engineering Department. It leverages state-of-the-art Large Language Models to personalize the academic journey for subjects like Differential Equations, Circuits, and Engineering Data Analysis.
 
-## ✨ Features
+## 💎 Core Ecosystem
 
-- **🎯 Adaptive Onboarding**: Tailors content recommendations based on your familiarity with subjects and identified weak areas.
-- **📊 Intelligence Dashboard**: Track your progress across different engineering domains with real-time analytics.
-- **📖 AI-Generated Lessons**: Instantly generate comprehensive, engineering-grade lessons on any topic using Gemini 1.5 Flash.
-- **⚡ Interactive Arena**: Test your knowledge in the Arena with dynamically generated quizzes tailored to your difficulty level.
-- **◎ AI Companion**: A dedicated engineering tutor available 24/7 to answer complex conceptual questions.
-- **⬣ Admin Control**: Seamlessly ingest lecture PDFs and generate curriculum-aligned content.
+### 🎯 Precision Onboarding
+Stepwise doesn't just teach; it understands. Through initial cognitive mapping, the platform identifies your mastery levels and weak points to curate a unique educational path.
 
-## 🛠️ Tech Stack
+### 🧠 Generative Intelligence (Lesson Engine)
+Experience lessons that are never static. Powered by Gemini 3.1 Flash, Stepwise generates curriculum-aligned engineering content on-demand, ensuring you always have the most relevant and comprehensive study material.
 
-- **Framework**: [Next.js 15 (App Router)](https://nextjs.org/)
-- **AI Engine**: [Google Gemini API](https://ai.google.dev/)
-- **Database**: [Supabase](https://supabase.com/)
-- **Styling**: Vanilla CSS with a custom **Dark Emerald** Design System
-- **Language**: TypeScript
+### ⚡ The Arena
+Step into the Arena for high-stakes, adaptive knowledge verification. The system generates dynamic quiz sets that adjust in real-time to your performance, pushing the boundaries of your engineering intuition.
 
-## 🚀 Getting Started
+### ◎ The Companion
+A dedicated, 24/7 engineering mentor. The Companion provides instant conceptual clarity, solving complex derivations and explaining network theorems with professor-level precision.
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/stepwise.git
-cd stepwise
-```
+## 🛠️ Technological Foundation
 
-### 2. Install dependencies
-```bash
-npm install
-```
+- **Core**: Next.js 15 (Edge Runtime Ready)
+- **AI**: Google Gemini Pro & Flash (LATEST)
+- **Data Persistence**: Supabase Hyper-scalable Postgres
+- **Aesthetic**: Custom Dark Emerald Design System (Forest-Focus)
 
-### 3. Configure environment variables
-Create a `.env.local` file in the root directory:
-```env
-GEMINI_API_KEY=your_api_key_here
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+## 🌐 Deployment
+Stepwise is architected for seamless cloud distribution. 
 
-### 4. Run the development server
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
-
-## 🎨 Design Philosophy
-
-Stepwise features a **Premium Dark Emerald** aesthetic, meticulously crafted for engineering students. The palette avoids yellow-green tones in favor of deep forest greens and vibrant emerald accents, creating a professional, high-focus environment.
+**[Live Platform Link Coming Soon]**
 
 ---
-
-Built for the **Sophomore Retention Exam** — Computer Engineering Department.
+© 2026 Stepwise Platform. Computer Engineering Sophomore Retention Exam Project.
