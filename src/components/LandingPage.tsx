@@ -34,19 +34,41 @@ export default function LandingPage({ onStart }: LandingPageProps) {
       }} />
 
       <div style={{ position: "relative", zIndex: 1, textAlign: "center", maxWidth: 800 }}>
-        {/* Minimalist Hollow Italic Logo */}
+        {/* Double-Shell Hollow Italic Logo */}
         <div style={{ 
-          fontSize: 80,
-          fontWeight: 900,
-          fontStyle: "italic",
-          color: "transparent",
-          WebkitTextStroke: `2px ${C.primary}`,
-          fontFamily: "var(--font-display)",
-          marginBottom: 16,
-          lineHeight: 1,
-          filter: `drop-shadow(0 0 15px ${C.primaryGlow})`,
+          position: "relative",
+          width: 80,
+          height: 80,
+          margin: "0 auto 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           userSelect: "none"
-        }}>S</div>
+        }}>
+          {/* Outer Shell */}
+          <div style={{ 
+            position: "absolute",
+            fontSize: 84,
+            fontWeight: 900,
+            fontStyle: "italic",
+            color: "transparent",
+            WebkitTextStroke: `3px ${C.primary}33`,
+            fontFamily: "var(--font-display)",
+            zIndex: 1
+          }}>S</div>
+          {/* Inner Shell */}
+          <div style={{ 
+            position: "absolute",
+            fontSize: 80,
+            fontWeight: 900,
+            fontStyle: "italic",
+            color: "transparent",
+            WebkitTextStroke: `1.5px ${C.primary}`,
+            fontFamily: "var(--font-display)",
+            filter: `drop-shadow(0 0 10px ${C.primaryGlow})`,
+            zIndex: 2
+          }}>S</div>
+        </div>
 
         <h1 style={{ 
           fontFamily: "var(--font-display)", 

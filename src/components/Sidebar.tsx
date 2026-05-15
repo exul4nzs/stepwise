@@ -40,17 +40,36 @@ export default function Sidebar({ page, setPage, user, isAdmin }: SidebarProps) 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
             style={{
+              position: "relative",
+              width: 24,
+              height: 24,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              userSelect: "none"
+            }}
+          >
+            <div style={{ 
+              position: "absolute",
+              fontSize: 26,
+              fontWeight: 900,
+              fontStyle: "italic",
+              color: "transparent",
+              WebkitTextStroke: `1px ${C.primary}33`,
+              fontFamily: "var(--font-display)",
+              zIndex: 1
+            }}>S</div>
+            <div style={{ 
+              position: "absolute",
               fontSize: 24,
               fontWeight: 900,
               fontStyle: "italic",
               color: "transparent",
               WebkitTextStroke: `1px ${C.primary}`,
               fontFamily: "var(--font-display)",
-              filter: `drop-shadow(0 0 8px ${C.primaryGlow})`,
-              userSelect: "none"
-            }}
-          >
-            S
+              filter: `drop-shadow(0 0 5px ${C.primaryGlow})`,
+              zIndex: 2
+            }}>S</div>
           </div>
           <div>
             <div

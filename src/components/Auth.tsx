@@ -100,16 +100,37 @@ export default function Auth({ onSession }: AuthProps) {
       }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <div style={{ 
-            fontSize: 48,
-            fontWeight: 900,
-            fontStyle: "italic",
-            color: "transparent",
-            WebkitTextStroke: `2px ${C.primary}`,
-            fontFamily: "var(--font-display)",
-            marginBottom: 8,
-            filter: `drop-shadow(0 0 10px ${C.primaryGlow})`,
+            position: "relative",
+            width: 48,
+            height: 48,
+            margin: "0 auto 8px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             userSelect: "none"
-          }}>S</div>
+          }}>
+            <div style={{ 
+              position: "absolute",
+              fontSize: 52,
+              fontWeight: 900,
+              fontStyle: "italic",
+              color: "transparent",
+              WebkitTextStroke: `2px ${C.primary}33`,
+              fontFamily: "var(--font-display)",
+              zIndex: 1
+            }}>S</div>
+            <div style={{ 
+              position: "absolute",
+              fontSize: 48,
+              fontWeight: 900,
+              fontStyle: "italic",
+              color: "transparent",
+              WebkitTextStroke: `1.5px ${C.primary}`,
+              fontFamily: "var(--font-display)",
+              filter: `drop-shadow(0 0 8px ${C.primaryGlow})`,
+              zIndex: 2
+            }}>S</div>
+          </div>
           <h1 style={{ 
             fontFamily: "var(--font-display)", 
             fontSize: 24, 
