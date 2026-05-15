@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 import * as pdfjs from "pdfjs-dist";
 
 // Set worker for pdfjs
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 /* ─── Markdown renderer ────────────────────────────────────────────────── */
 function renderMarkdown(text: string): string {
