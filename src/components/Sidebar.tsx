@@ -140,21 +140,6 @@ export default function Sidebar({ page, setPage, user }: SidebarProps) {
         })}
       </nav>
 
-      {/* Energy */}
-      <div
-        style={{
-          padding: "16px 20px",
-          borderTop: `1px solid ${C.border}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <span style={{ fontSize: 12, color: C.gold, fontWeight: 700 }}>
-          24⚡ ENERGY
-        </span>
-        <span style={{ fontSize: 11, color: C.textDim }}>🔥 14 streak</span>
-      </div>
     </aside>
   );
 }
