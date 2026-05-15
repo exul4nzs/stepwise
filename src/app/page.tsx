@@ -25,6 +25,7 @@ const AdminPage = dynamic(() => import("@/components/AdminPage"), {
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import Auth from "@/components/Auth";
+import LandingPage from "@/components/LandingPage";
 
 const PAGE_SUBTITLES: Record<string, string> = {
   dashboard: "Your Mission Overview",
@@ -38,14 +39,17 @@ export default function Home() {
   const [session, setSession] = useState<any>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [page, setPage] = useState<PageId>("dashboard");
+  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session) setShowLanding(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      if (session) setShowLanding(false);
     });
 
     return () => subscription.unsubscribe();
@@ -55,7 +59,12 @@ export default function Home() {
     setUser((prev) => (prev ? { ...prev, ...updates } : null));
   };
 
-  // 1. Auth Gate
+  // 1. Landing Page
+  if (!session && showLanding) {
+    return <LandingPage onStart={() => setShowLanding(false)} />;
+  }
+
+  // 2. Auth Gate
   if (!session) {
     return <Auth onSession={setSession} />;
   }
