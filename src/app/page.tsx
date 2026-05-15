@@ -74,7 +74,7 @@ export default function Home() {
     return <Onboarding onDone={(u) => setUser(u)} />;
   }
 
-  const isAdmin = session?.user?.email === "admin@stepwise.edu" || session?.user?.email === "dev@stepwise.edu"; 
+  const isAdmin = session?.user?.email === "admin@stepwise.edu"; 
   // Tip: You can change the above email to yours or check a metadata field.
 
   // ─── Main App ───────────────────────────────────────────────────
