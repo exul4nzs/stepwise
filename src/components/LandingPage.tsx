@@ -53,25 +53,25 @@ export default function LandingPage({ onStart }: LandingPageProps) {
 
         <h1 style={{ 
           fontFamily: "var(--font-display)", 
-          fontSize: "clamp(48px, 8vw, 72px)", 
+          fontSize: "clamp(40px, 7vw, 64px)", 
           fontWeight: 900, 
           color: "#fff",
-          lineHeight: 0.9,
+          lineHeight: 1,
           letterSpacing: "-0.02em",
           marginBottom: 24
         }}>
-          STEP<span style={{ color: C.primary }}>WISE</span>
+          Anxious about the <span style={{ color: C.primary }}>Retention Exam?</span>
         </h1>
         
         <p style={{ 
-          fontSize: "clamp(16px, 2vw, 20px)", 
+          fontSize: "clamp(16px, 1.5vw, 18px)", 
           color: C.textMuted, 
           maxWidth: 600, 
           margin: "0 auto 48px",
           lineHeight: 1.6,
           fontWeight: 500
         }}>
-          The ultimate AI-driven retention platform for <span style={{ color: C.primary }}>Engineering Sophomores</span>. Master differential equations and circuits through intelligent curriculum scanning.
+          We get it. Stepwise is a survival tool built by engineering students, for engineering students. No corporate fluff—just the core concepts you actually need to pass.
         </p>
 
         {/* Features Grid */}
@@ -84,18 +84,18 @@ export default function LandingPage({ onStart }: LandingPageProps) {
         }}>
           <FeatureCard 
             icon="🧠" 
-            title="AI Tutors" 
-            desc="Gemini-powered lessons tailored to the 8th Ed Nagle/Saff curriculum." 
+            title="Actually Helpful" 
+            desc="Gemini-powered lessons that focus on retention, not just reading." 
           />
           <FeatureCard 
             icon="🔍" 
-            title="PDF Scan" 
-            desc="Upload your study guides and let AI extract a structured roadmap." 
+            title="Scan the Syllabus" 
+            desc="Throw your PDFs at us and we'll tell you what to actually study." 
           />
           <FeatureCard 
             icon="📐" 
-            title="Math Engine" 
-            desc="High-fidelity LaTeX rendering for complex engineering formulas." 
+            title="Clean Math" 
+            desc="No messy text—just clear, readable engineering formulas." 
           />
         </div>
 
@@ -108,7 +108,7 @@ export default function LandingPage({ onStart }: LandingPageProps) {
             border: "none",
             borderRadius: 100,
             fontWeight: 900,
-            fontSize: 18,
+            fontSize: 16,
             cursor: "pointer",
             fontFamily: "var(--font-display)",
             letterSpacing: "0.05em",
@@ -124,7 +124,7 @@ export default function LandingPage({ onStart }: LandingPageProps) {
             e.currentTarget.style.boxShadow = neonGreen.boxShadow;
           }}
         >
-          INITIALIZE PROTOCOL →
+          STOP PANICKING & START →
         </button>
       </div>
 
