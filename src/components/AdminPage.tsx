@@ -5,6 +5,10 @@ import { C, glass, neonGreen } from "@/lib/tokens";
 import { SUBJECTS } from "@/lib/constants";
 import { callAI } from "@/lib/ai";
 import { supabase } from "@/lib/supabase";
+import * as pdfjs from "pdfjs-dist";
+
+// Set worker for pdfjs
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 /* ─── Markdown renderer ────────────────────────────────────────────────── */
 function renderMarkdown(text: string): string {
@@ -43,42 +47,78 @@ export default function AdminPage() {
   const [type, setType] = useState<"lesson" | "quiz">("lesson");
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState("");
+  const [extracting, setExtracting] = useState(false);
+  const [extractedText, setExtractedText] = useState("");
+  const [uploads, setUploads] = useState<any[]>([]);
 
-  const fakeUploads = [
-    {
-      name: "DE_module_3.pdf",
-      subject: "Differential Equations",
-      topic: "Laplace",
-      date: "2025-05-10",
-      lessons: 3,
-      quizzes: 12,
-    },
-    {
-      name: "circuits_lab.pdf",
-      subject: "Circuits",
-      topic: "Network Theory",
-      date: "2025-05-09",
-      lessons: 2,
-      quizzes: 8,
-    },
-  ];
+  const onFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setExtracting(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const typedarray = new Uint8Array(reader.result as ArrayBuffer);
+          const pdf = await pdfjs.getDocument(typedarray).promise;
+          let fullText = "";
+          
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map((item: any) => (item as any).str).join(" ");
+            fullText += pageText + "\n";
+          }
+          
+          setExtractedText(fullText);
+          setUploads([{ name: file.name, date: new Date().toLocaleDateString(), status: "Extracted" }]);
+          setExtracting(false);
+          alert("PDF text extracted successfully! You can now generate content from it.");
+        } catch (innerErr: any) {
+          console.error("PDF Parse error:", innerErr);
+          alert("Error parsing PDF: " + innerErr.message);
+          setExtracting(false);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } catch (err: any) {
+      console.error("FileReader error:", err);
+      alert("Failed to read file: " + err.message);
+      setExtracting(false);
+    }
+  };
 
   const handleGenerate = async () => {
-    if (!topic.trim()) return;
+    if (!topic.trim() && !extractedText) {
+        alert("Please enter a topic or upload a PDF first.");
+        return;
+    }
     setGenerating(true);
     setResult("");
 
-    const sys =
+    let sys =
       type === "lesson"
-        ? `You are an engineering curriculum designer. Generate a structured lesson outline in markdown format. Include learning objectives, key concepts, formulas, examples, and summary. Be educational and clear.`
-        : `You are an engineering exam writer. Generate 5 quiz questions (mix of multiple choice and short answer) on the given topic. For each: Question, choices (if MC), correct answer, brief explanation. Format cleanly.`;
+        ? `You are an engineering curriculum designer. Generate a structured lesson outline in markdown format based on the provided context. Include learning objectives, key concepts, formulas, examples, and summary. Be educational and clear.`
+        : `You are an engineering exam writer. Generate 5 quiz questions (mix of multiple choice and short answer) based on the provided context. For each: Question, choices (if MC), correct answer, brief explanation. Format cleanly.`;
 
-    const text = await callAI(
-      sys,
-      `Subject: ${subject}\nTopic: ${topic}\nDifficulty: Intermediate\nGenerate ${
+    if (subject === "Differential Equations") {
+      sys += `\n\nIMPORTANT: For Differential Equations, focus EXCLUSIVELY on these retention-exam topics:
+1. Classifications of DE (Order, Degree, Linearity)
+2. First Order DE methods (Separable, Exact, Linear, Bernoulli)
+3. Applications of DE (Population growth/decay, Newton's law of cooling, RL/RC Circuits)
+4. Linear Order N DEs (Homogeneous and Non-homogeneous methods, including constant coefficients)
+5. Laplace Transforms (Forward and Inverse transforms only)
+
+Ignore advanced topics like PDEs, Series Solutions, or complex Boundary Value Problems if they appear in the context.`;
+    }
+
+    const context = extractedText ? `CONTEXT FROM PDF:\n${extractedText.substring(0, 6000)}\n\n` : "";
+    const prompt = `${context}Subject: ${subject}\nTopic: ${topic || 'Extracted from context'}\nDifficulty: Intermediate\nGenerate ${
         type === "lesson" ? "a lesson" : "quiz questions"
-      } on this engineering topic.`
-    );
+      } on this engineering topic.`;
+
+    const text = await callAI(sys, prompt);
     setResult(text);
     setGenerating(false);
   };
@@ -266,6 +306,38 @@ export default function AdminPage() {
                   (e.target.style.borderColor = C.border)
                 }
               />
+              <div
+                style={{
+                  display: "flex",
+                  gap: 12,
+                  marginTop: 8,
+                }}
+              >
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={onFileUpload}
+                  id="pdf-upload"
+                  style={{ display: "none" }}
+                />
+                <label
+                  htmlFor="pdf-upload"
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    background: "rgba(52,211,102,0.05)",
+                    border: `1px dashed ${C.border}`,
+                    borderRadius: 8,
+                    textAlign: "center",
+                    cursor: "pointer",
+                    fontSize: 12,
+                    color: C.text,
+                    fontWeight: 600,
+                  }}
+                >
+                  {extracting ? "⌛ EXTRACTING..." : "📂 UPLOAD PDF"}
+                </label>
+              </div>
             </div>
 
             <div style={{ marginBottom: 16 }}>
@@ -307,12 +379,12 @@ export default function AdminPage() {
 
             <button
               onClick={handleGenerate}
-              disabled={generating || !topic.trim()}
+              disabled={generating || extracting || (!topic.trim() && !extractedText)}
               style={{
                 width: "100%",
                 padding: "12px",
-                background: topic.trim() ? C.primary : C.bgHighest,
-                color: topic.trim() ? "#000" : C.textDim,
+                background: (topic.trim() || extractedText) ? C.primary : C.bgHighest,
+                color: (topic.trim() || extractedText) ? "#000" : C.textDim,
                 border: "none",
                 borderRadius: 10,
                 fontWeight: 800,
@@ -322,7 +394,7 @@ export default function AdminPage() {
                 boxShadow: topic.trim() ? neonGreen.boxShadow : "none",
               }}
             >
-              {generating ? "⬡ Generating..." : "⚡ GENERATE CONTENT"}
+              {generating ? "⬡ Generating..." : extracting ? "⌛ Extracting..." : "⚡ GENERATE CONTENT"}
             </button>
           </div>
 
@@ -340,7 +412,12 @@ export default function AdminPage() {
             >
               Uploaded Documents
             </div>
-            {fakeUploads.map((f, i) => (
+            {uploads.length === 0 && (
+              <div style={{ fontSize: 11, color: C.textDim, textAlign: "center", padding: "10px" }}>
+                No documents uploaded yet
+              </div>
+            )}
+            {uploads.map((f, i) => (
               <div
                 key={i}
                 style={{
@@ -363,33 +440,7 @@ export default function AdminPage() {
                     marginTop: 3,
                   }}
                 >
-                  {f.subject} · {f.topic}
-                </div>
-                <div
-                  style={{ display: "flex", gap: 8, marginTop: 6 }}
-                >
-                  <span
-                    style={{
-                      fontSize: 10,
-                      color: C.primary,
-                      background: "rgba(52,211,102,0.1)",
-                      padding: "2px 8px",
-                      borderRadius: 4,
-                    }}
-                  >
-                    {f.lessons} lessons
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      color: "#60a5fa",
-                      background: "rgba(96,165,250,0.1)",
-                      padding: "2px 8px",
-                      borderRadius: 4,
-                    }}
-                  >
-                    {f.quizzes} quizzes
-                  </span>
+                  {f.date} · {f.status}
                 </div>
               </div>
             ))}
