@@ -100,19 +100,15 @@ export default function Auth({ onSession }: AuthProps) {
       }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <div style={{ 
-            width: 48, 
-            height: 48, 
-            background: `linear-gradient(135deg, ${C.primaryDim}, ${C.primary})`,
-            margin: "0 auto 16px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 24,
+            fontSize: 48,
             fontWeight: 900,
-            color: "#000",
-            boxShadow: `0 0 30px ${C.primaryGlow}`,
-            clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
-            fontFamily: "monospace"
+            fontStyle: "italic",
+            color: "transparent",
+            WebkitTextStroke: `2px ${C.primary}`,
+            fontFamily: "var(--font-display)",
+            marginBottom: 8,
+            filter: `drop-shadow(0 0 10px ${C.primaryGlow})`,
+            userSelect: "none"
           }}>S</div>
           <h1 style={{ 
             fontFamily: "var(--font-display)", 

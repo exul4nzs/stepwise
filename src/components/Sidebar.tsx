@@ -40,18 +40,14 @@ export default function Sidebar({ page, setPage, user, isAdmin }: SidebarProps) 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
             style={{
-              width: 32,
-              height: 32,
-              background: `linear-gradient(135deg, ${C.primaryDim}, ${C.primary})`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 16,
+              fontSize: 24,
               fontWeight: 900,
-              color: "#000",
-              boxShadow: `0 0 15px ${C.primaryGlow}`,
-              clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
-              fontFamily: "monospace"
+              fontStyle: "italic",
+              color: "transparent",
+              WebkitTextStroke: `1px ${C.primary}`,
+              fontFamily: "var(--font-display)",
+              filter: `drop-shadow(0 0 8px ${C.primaryGlow})`,
+              userSelect: "none"
             }}
           >
             S
