@@ -22,6 +22,21 @@ function MissionPendingUI({ email, onBack, onSession }: { email: string; onBack:
     }
   };
 
+  const resendEmail = async () => {
+    setSyncing(true);
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+    });
+    
+    if (error) {
+      alert("⚠️ Rate Limit: " + error.message);
+    } else {
+      alert("🚀 Confirmation email resent!");
+    }
+    setSyncing(false);
+  };
+
   return (
     <div className="animate-fade-in" style={{ textAlign: "center", padding: "40px 20px" }}>
       <div 
@@ -58,6 +73,24 @@ function MissionPendingUI({ email, onBack, onSession }: { email: string; onBack:
         </button>
 
         <button
+          onClick={resendEmail}
+          disabled={syncing}
+          style={{
+            padding: "12px 24px",
+            background: "transparent",
+            color: C.primary,
+            border: `1px solid ${C.primary}`,
+            borderRadius: 12,
+            fontWeight: 700,
+            fontSize: 13,
+            cursor: syncing ? "wait" : "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          📩 RESEND EMAIL
+        </button>
+
+        <button
           onClick={onBack}
           style={{
             background: "transparent",
@@ -65,7 +98,8 @@ function MissionPendingUI({ email, onBack, onSession }: { email: string; onBack:
             color: C.textDim,
             fontSize: 12,
             textDecoration: "underline",
-            cursor: "pointer"
+            cursor: "pointer",
+            marginTop: 8
           }}
         >
           Wait, I used the wrong email
