@@ -145,16 +145,20 @@ export default function LandingPage({ onStart }: LandingPageProps) {
         >
           STOP PANICKING & START →
         </button>
+        <div style={{ height: 80 }} /> {/* Spacer to prevent footer overlap */}
       </div>
 
       {/* Bottom Footer */}
       <div style={{ 
         position: "absolute", 
-        bottom: 32, 
-        fontSize: 11, 
+        bottom: 24, 
+        width: "100%",
+        textAlign: "center",
+        fontSize: 10, 
         color: C.textDim, 
         letterSpacing: "0.2em", 
-        textTransform: "uppercase" 
+        textTransform: "uppercase",
+        opacity: 0.5
       }}>
         Authorized Personnel Only // System v2.4.0
       </div>
