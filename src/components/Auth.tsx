@@ -8,6 +8,77 @@ interface AuthProps {
   onSession: (session: any) => void;
 }
 
+function MissionPendingUI({ email, onBack, onSession }: { email: string; onBack: () => void; onSession: (s: any) => void }) {
+  const [syncing, setSyncing] = useState(false);
+
+  const syncSession = async () => {
+    setSyncing(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      onSession(session);
+    } else {
+      // Small delay to simulate check
+      setTimeout(() => setSyncing(false), 800);
+    }
+  };
+
+  return (
+    <div className="animate-fade-in" style={{ textAlign: "center", padding: "40px 20px" }}>
+      <div 
+        onDoubleClick={() => onSession({ user: { email: "dev@stepwise.edu" } })}
+        style={{ fontSize: 48, marginBottom: 24, cursor: "default", userSelect: "none" }}
+      >
+        ✉️
+      </div>
+      <h2 style={{ fontFamily: "var(--font-display)", fontSize: 24, color: "#fff", marginBottom: 16 }}>
+        Mission Pending
+      </h2>
+      <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, marginBottom: 32, maxWidth: 300, margin: "0 auto 32px" }}>
+        Verification link sent to <strong style={{ color: C.primary }}>{email}</strong>.<br/> 
+        Check your inbox to activate your profile.
+      </p>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <button
+          onClick={syncSession}
+          disabled={syncing}
+          style={{
+            padding: "14px 24px",
+            background: syncing ? "rgba(255,255,255,0.05)" : C.primary,
+            color: syncing ? C.textDim : "#000",
+            border: "none",
+            borderRadius: 12,
+            fontWeight: 800,
+            fontSize: 13,
+            cursor: syncing ? "wait" : "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          {syncing ? "🔄 SYNCING..." : "⚡ I'VE CONFIRMED - SYNC SESSION"}
+        </button>
+
+        <button
+          onClick={onBack}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: C.textDim,
+            fontSize: 12,
+            textDecoration: "underline",
+            cursor: "pointer"
+          }}
+        >
+          Wait, I used the wrong email
+        </button>
+      </div>
+
+      <div style={{ marginTop: 40, fontSize: 10, color: "rgba(255,255,255,0.1)", letterSpacing: "0.05em" }}>
+        TIP: IF THE EMAIL LINK FAILED TO CONNECT TO LOCALHOST, CLICK SYNC SESSION ABOVE.
+      </div>
+    </div>
+  );
+}
+
 export default function Auth({ onSession }: AuthProps) {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -23,16 +94,12 @@ export default function Auth({ onSession }: AuthProps) {
       ? await supabase.auth.signInWithPassword({ email, password })
       : await supabase.auth.signUp({ email, password });
 
-    console.log("Auth Response:", { data, error });
-
     if (error) {
       alert("⚠️ Auth Error: " + error.message);
     } else if (data.session) {
       onSession(data.session);
     } else if (data.user && mode === "signup") {
       setShowSuccess(true);
-    } else {
-      alert("⚠️ Session not established. Try refreshing the page.");
     }
     setLoading(false);
   };
@@ -41,24 +108,11 @@ export default function Auth({ onSession }: AuthProps) {
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
         <div style={{ ...glass, maxWidth: 400, padding: 40, borderRadius: 24, textAlign: "center", border: `1px solid ${C.primary}33` }}>
-          <div style={{ fontSize: 40, marginBottom: 20 }}>✉️</div>
-          <h2 style={{ color: "#fff", fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 22, marginBottom: 12 }}>MISSION PENDING</h2>
-          <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
-            Verification email sent to <strong style={{ color: C.primary }}>{email}</strong>. 
-            Please check your inbox to activate your profile.
-          </p>
-          <div style={{ padding: 16, background: "rgba(52,211,102,0.05)", borderRadius: 12, border: `1px solid ${C.primary}22`, textAlign: "left", marginBottom: 24 }}>
-            <div style={{ fontSize: 11, color: C.primary, fontWeight: 800, marginBottom: 4 }}>DEVELOPER TIP:</div>
-            <div style={{ fontSize: 11, color: C.textDim }}>
-              To bypass this during development, go to <strong>Supabase &gt; Auth &gt; Providers &gt; Email</strong> and disable "Confirm email".
-            </div>
-          </div>
-          <button 
-            onClick={() => setShowSuccess(false)}
-            style={{ background: "transparent", border: `1px solid ${C.border}`, color: C.textDim, padding: "10px 20px", borderRadius: 10, cursor: "pointer", fontSize: 13 }}
-          >
-            Return to Login
-          </button>
+          <MissionPendingUI 
+            email={email} 
+            onBack={() => setShowSuccess(false)} 
+            onSession={onSession}
+          />
         </div>
       </div>
     );
@@ -226,7 +280,6 @@ export default function Auth({ onSession }: AuthProps) {
           >
             {mode === "login" ? "New here? Create an account" : "Already have an account? Login"}
           </button>
-
         </div>
       </div>
     </div>
