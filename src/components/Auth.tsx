@@ -227,21 +227,19 @@ export default function Auth({ onSession }: AuthProps) {
             {mode === "login" ? "New here? Create an account" : "Already have an account? Login"}
           </button>
 
-          {/* Secret Bypass Zone (Invisible) */}
+          {/* Dev Bypass */}
           <button 
             type="button"
             onClick={() => onSession({ user: { email: "dev@stepwise.edu" } })}
             style={{ 
               background: "transparent", 
               border: "none", 
-              color: "transparent", 
-              fontSize: 1, 
-              cursor: "default",
-              marginTop: 10,
-              userSelect: "none"
+              color: "rgba(255,255,255,0.1)", 
+              fontSize: 10, 
+              cursor: "pointer" 
             }}
           >
-            .
+            DEBUG: BYPASS AUTH
           </button>
         </div>
       </div>
