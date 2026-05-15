@@ -102,16 +102,17 @@ export default function Auth({ onSession }: AuthProps) {
           <div style={{ 
             width: 48, 
             height: 48, 
-            borderRadius: "50%", 
             background: `linear-gradient(135deg, ${C.primaryDim}, ${C.primary})`,
             margin: "0 auto 16px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 20,
+            fontSize: 24,
             fontWeight: 900,
             color: "#000",
-            boxShadow: `0 0 30px ${C.primaryGlow}`
+            boxShadow: `0 0 30px ${C.primaryGlow}`,
+            clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
+            fontFamily: "monospace"
           }}>S</div>
           <h1 style={{ 
             fontFamily: "var(--font-display)", 

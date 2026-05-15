@@ -40,9 +40,8 @@ export default function Sidebar({ page, setPage, user, isAdmin }: SidebarProps) 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
             style={{
-              width: 36,
-              height: 36,
-              borderRadius: "50%",
+              width: 32,
+              height: 32,
               background: `linear-gradient(135deg, ${C.primaryDim}, ${C.primary})`,
               display: "flex",
               alignItems: "center",
@@ -50,7 +49,9 @@ export default function Sidebar({ page, setPage, user, isAdmin }: SidebarProps) 
               fontSize: 16,
               fontWeight: 900,
               color: "#000",
-              boxShadow: `0 0 20px ${C.primaryGlow}`,
+              boxShadow: `0 0 15px ${C.primaryGlow}`,
+              clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
+              fontFamily: "monospace"
             }}
           >
             S

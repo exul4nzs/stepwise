@@ -34,21 +34,22 @@ export default function LandingPage({ onStart }: LandingPageProps) {
       }} />
 
       <div style={{ position: "relative", zIndex: 1, textAlign: "center", maxWidth: 800 }}>
-        {/* Brand Icon */}
+        {/* Brand Icon - Hexagonal Engineering Logo */}
         <div style={{ 
           width: 80, 
           height: 80, 
-          borderRadius: "24%", 
           background: `linear-gradient(135deg, ${C.primaryDim}, ${C.primary})`,
           margin: "0 auto 32px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 32,
+          fontSize: 36,
           fontWeight: 900,
           color: "#000",
-          boxShadow: `0 0 50px ${C.primaryGlow}`,
-          transform: "rotate(-5deg)"
+          boxShadow: `0 0 40px ${C.primaryGlow}, 0 0 80px ${C.primary}22`,
+          clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
+          fontFamily: "monospace", // Sharp, technical feel
+          letterSpacing: "-0.05em"
         }}>S</div>
 
         <h1 style={{ 
