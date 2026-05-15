@@ -169,7 +169,7 @@ export default function Onboarding({ onDone }: OnboardingProps) {
               <div
                 style={{ fontSize: 14, color: C.textMuted, marginBottom: 24 }}
               >
-                Differential Equations · Data Analysis · Circuits
+                DE · Data Analysis · Electrical · Electronic
               </div>
               {[
                 {
